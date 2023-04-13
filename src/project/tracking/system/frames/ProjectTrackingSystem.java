@@ -1,5 +1,5 @@
 
-package project.tracking.system;
+package project.tracking.system.frames;
 
 public class ProjectTrackingSystem {
 
@@ -7,7 +7,10 @@ public class ProjectTrackingSystem {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        
+        LoginFrame lg = new LoginFrame();
+        
+        lg.show();
     }
     
 }
