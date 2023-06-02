@@ -8,15 +8,19 @@ public interface Employeedao {
     
     public boolean addEmployee(Employee emp);
     
-    public boolean deleteEmployee();
+    public boolean deleteEmployee(int eid);
     
-    public boolean updateEmployee();
+    public boolean updateEmployee(Employee emp);
     
-    public Employee selectEmployee();
+    public Employee selectEmployee(int eid);
     
     public List<Employee> selectAllEmployees();
     
     public int getEmployeeCidByEmail(String email);
     
+    public Employee getEmployeeByEmail(String email);
+    
     public boolean addEmployeeByCid(Employee emp);
+    
+    public List<Integer> selectPidByEid(Employee emp);
 }

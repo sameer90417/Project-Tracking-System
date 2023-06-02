@@ -2,23 +2,101 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package project.tracking.system.frames;
+package project.tracking.system.frames.employee;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.text.ParseException;
+import java.util.List;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import project.tracking.system.frames.admin.*;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.table.DefaultTableModel;
+import project.tracking.system.dao.Employeedao;
+import project.tracking.system.daoimpl.EmployeeDaoImpl;
+import project.tracking.system.database.ConnectionProvider;
+import project.tracking.system.entity.Employee;
+import project.tracking.system.entity.Project;
 
 /**
  *
  * @author Vikas
  */
-public class AdminHomeFrame extends javax.swing.JFrame {
+public class EmployeeProjectFrame extends javax.swing.JFrame {
+    
+    public Employee emp;
 
     /**
      * Creates new form AdminHomeFrame
      */
-    public AdminHomeFrame() {
+    public EmployeeProjectFrame() {
         initComponents();
+        table_update();
+    }
+    
+    public EmployeeProjectFrame(Employee emp) {
+        initComponents();
+        this.emp = emp;
+        table_update();
+    }
+    
+    
+    private void table_update() {
+        int CC;
+        Connection con1 = null;
+        try {
+            con1 = ConnectionProvider.getConncection();
+            Employeedao dao = new EmployeeDaoImpl();
+            String query = "SELECT * from pts_project WHERE pid=";
+            
+            List<Integer> list =  dao.selectPidByEid(this.emp);
+            
+            int i = 0;
+            for (Integer integer : list) {
+                if(i == 0) {
+                    query += integer;
+                    i++;
+                    continue;
+                } 
+                query = query +" or pid="+ integer;
+            }
+            
+            PreparedStatement insert = con1.prepareStatement(query);
+            ResultSet Rs = insert.executeQuery();
+
+            ResultSetMetaData RSMD = Rs.getMetaData();
+            CC = RSMD.getColumnCount();
+            DefaultTableModel DFT = (DefaultTableModel) jTable1.getModel();
+            DFT.setRowCount(0);
+
+            while (Rs.next()) {
+                Vector v2 = new Vector();
+
+                for (int ii = 1; ii <= CC; ii++) {
+                    v2.add(Rs.getString("pid"));
+                    v2.add(Rs.getString("pname"));
+                    v2.add(Rs.getString("pdescription"));
+                    v2.add(Rs.getString("designer"));
+                    v2.add(Rs.getString("coder"));
+                    v2.add(Rs.getString("tester"));
+                    v2.add(Rs.getString("assigndate"));
+                    v2.add(Rs.getString("enddate"));
+                }
+                DFT.addRow(v2);
+            }
+        } catch (Exception e) {
+        } finally {
+            try {
+                con1.close();
+            } catch (Exception e) {
+            }
+        }
     }
 
     /**
@@ -39,7 +117,10 @@ public class AdminHomeFrame extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
         jPanel3 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
         jLabel3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
@@ -70,7 +151,7 @@ public class AdminHomeFrame extends javax.swing.JFrame {
         });
         jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, 40, 40));
 
-        jPanel4.setBackground(new java.awt.Color(54, 70, 78));
+        jPanel4.setBackground(new java.awt.Color(204, 204, 204));
         jPanel4.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jPanel4.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -88,10 +169,10 @@ public class AdminHomeFrame extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Calibri", 1, 18)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel4.setText("Projects");
-        jPanel4.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 90, 20));
+        jLabel4.setText("View Progress");
+        jPanel4.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 110, 20));
 
-        jPanel2.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 170, 210, 40));
+        jPanel2.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 250, 170, 40));
 
         jPanel5.setBackground(new java.awt.Color(54, 70, 78));
         jPanel5.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -134,24 +215,58 @@ public class AdminHomeFrame extends javax.swing.JFrame {
         jLabel6.setFont(new java.awt.Font("Calibri", 1, 18)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel6.setText("Employees");
-        jPanel6.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 90, 20));
+        jLabel6.setText("My Projects");
+        jPanel6.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 100, 20));
 
         jPanel2.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 130, 210, 40));
+        jPanel2.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 210, 190, 10));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 72, 210, 553));
 
         jPanel3.setOpaque(false);
+
+        jTable1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "Project No", "Name", "Description", "Designer", "Coder", "Tester", "Assign Date", "End Date"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jTable1.setOpaque(false);
+        jTable1.setRowHeight(35);
+        jTable1.setRowMargin(2);
+        jTable1.setShowGrid(false);
+        jScrollPane1.setViewportView(jTable1);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 790, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 778, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 552, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 540, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 73, 790, 552));
@@ -242,20 +357,49 @@ public class AdminHomeFrame extends javax.swing.JFrame {
 
     private void jPanel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel5MouseClicked
         // TODO add your handling code here:
+        EmployeeHomeFrame ad = new EmployeeHomeFrame(this.emp);
+        ad.show();
+        this.dispose();
        
     }//GEN-LAST:event_jPanel5MouseClicked
 
     private void jPanel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel6MouseClicked
         // TODO add your handling code here:
-        AdminEmployeeFrame ademp = new AdminEmployeeFrame();
-        ademp.show();
-        this.dispose();
+        
     }//GEN-LAST:event_jPanel6MouseClicked
 
     private void jPanel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel4MouseClicked
-        // TODO add your handling code here:
-        AdminProjectFrame adpro = new AdminProjectFrame();
-        adpro.show();
+        
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        int selectedIndex = jTable1.getSelectedRow();
+        int pid = Integer.parseInt(model.getValueAt(selectedIndex, 0).toString());
+        String pname = model.getValueAt(selectedIndex, 1).toString();
+        String pdescription = model.getValueAt(selectedIndex, 2).toString();
+        int numberOfDesigners = Integer.parseInt(model.getValueAt(selectedIndex, 3).toString());
+        int numberOfCoders = Integer.parseInt(model.getValueAt(selectedIndex, 4).toString());
+        int numberOfTesters = Integer.parseInt(model.getValueAt(selectedIndex, 5).toString());
+        String assignDate = model.getValueAt(selectedIndex, 6).toString();
+        String endDate = model.getValueAt(selectedIndex, 7).toString();
+
+        Project project = new Project();
+        project.setPid(pid);
+        project.setName(pname);
+        project.setDescription(pdescription);
+        project.setNumberOfDesigner(numberOfDesigners);
+        project.setNumberOfCoder(numberOfCoders);
+        project.setNumberOfTester(numberOfTesters);
+        project.setAssignDate(assignDate);
+        project.setEndDate(endDate);
+        
+        
+        
+        EmployeeProgressFrame frame=null;
+        try {
+            frame = new EmployeeProgressFrame(this.emp, project);
+        } catch (ParseException ex) {
+            Logger.getLogger(EmployeeProjectFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        frame.show();
         this.dispose();
     }//GEN-LAST:event_jPanel4MouseClicked
 
@@ -306,20 +450,21 @@ public class AdminHomeFrame extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AdminHomeFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EmployeeProjectFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AdminHomeFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EmployeeProjectFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AdminHomeFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EmployeeProjectFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AdminHomeFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EmployeeProjectFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AdminHomeFrame().setVisible(true);
+                new EmployeeProjectFrame().setVisible(true);
             }
         });
     }
@@ -337,6 +482,9 @@ public class AdminHomeFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 
     private void labelcolor(JLabel label){

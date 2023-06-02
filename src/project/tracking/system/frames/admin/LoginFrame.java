@@ -2,10 +2,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package project.tracking.system.frames;
+package project.tracking.system.frames.admin;
 
 import javax.swing.JOptionPane;
+import project.tracking.system.dao.Employeedao;
+import project.tracking.system.daoimpl.EmployeeDaoImpl;
 import project.tracking.system.database.Authenticator;
+import project.tracking.system.entity.Employee;
+import project.tracking.system.frames.employee.EmployeeHomeFrame;
 
 /**
  *
@@ -138,8 +142,12 @@ public class LoginFrame extends javax.swing.JFrame {
                 this.dispose();
                 
             } else {
-                
+                Employeedao dao = new EmployeeDaoImpl();
+                Employee emp = dao.getEmployeeByEmail(Email);
                 // Redirect to EmployeeHomeFrame
+                EmployeeHomeFrame ad = new EmployeeHomeFrame(emp);
+                ad.show();
+                this.dispose();
             }
             
         } else {

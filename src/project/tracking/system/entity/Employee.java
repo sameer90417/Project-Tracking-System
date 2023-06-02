@@ -17,6 +17,12 @@ public class Employee {
         this.email = email;
         this.password = password;
     }
+    
+    public Employee(String name, String profile, String email) {
+        this.name = name;
+        this.profile = profile;
+        this.email = email;
+    }
 
     public String getEmail() {
         return email;

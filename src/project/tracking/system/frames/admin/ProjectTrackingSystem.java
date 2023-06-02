@@ -1,5 +1,5 @@
 
-package project.tracking.system.frames;
+package project.tracking.system.frames.admin;
 
 public class ProjectTrackingSystem {
 
